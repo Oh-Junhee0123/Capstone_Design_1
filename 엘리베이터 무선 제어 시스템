@@ -1,0 +1,87 @@
+#include <SoftwareSerial.h>
+#include <Stepper.h>
+
+#define TX 3
+#define RX 2
+
+SoftwareSerial mySerial(RX, TX);
+char data = '0';
+
+int trigPin = 13;
+int echoPin = 12;
+
+const int stepsPerRevolution = 1024; 
+Stepper myStepper(stepsPerRevolution,11,9,10,8); 
+
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(9600);
+  mySerial.begin(9600);
+
+  myStepper.setSpeed(14); 
+  
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  if (mySerial.available()){
+    data = mySerial.read();
+    Serial.write(data);
+  }
+
+  digitalWrite(trigPin,HIGH);
+  delay(10);
+  digitalWrite(trigPin,LOW);
+  
+  float duration = pulseIn(echoPin, HIGH);
+  float distance = ((float)(340*duration)/10000)/2;  
+  
+  if(data == '1')
+  {
+    if(distance < 5)
+    {
+     myStepper.step(stepsPerRevolution);
+     delay(500);
+    }
+    else if(distance > 5)
+    {
+     myStepper.step(-stepsPerRevolution);
+     delay(500); 
+    }
+  }
+  
+  if(data == '2')
+  {
+    if(distance < 25)
+    {
+     myStepper.step(stepsPerRevolution);
+     delay(500);
+    }
+    else if(distance > 25)
+    {
+     myStepper.step(-stepsPerRevolution);
+     delay(500); 
+    }
+  }
+  
+  if(data == '3')
+  {
+    if(distance <= 45)
+    {
+     myStepper.step(stepsPerRevolution);
+     delay(500);
+    }
+    else if(distance > 45)
+    {
+     myStepper.step(-stepsPerRevolution);
+     delay(500); 
+    }
+  }
+  
+  if (Serial.available())
+  {
+    mySerial.write(Serial.read());
+  }
+}
