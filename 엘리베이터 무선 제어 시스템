@@ -1,3 +1,4 @@
+//인체감지센서 사용X 버전
 #include <SoftwareSerial.h>
 #include <Stepper.h>
 
